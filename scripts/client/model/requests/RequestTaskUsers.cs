@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using voidsccut.scripts.messageService;
 using voidsccut.scripts.shared.serverTypes;
 
 namespace voidsccut.scripts.client.model.requests;
@@ -47,5 +48,15 @@ public class RequestTaskUsers :IRequestTask
     public void ApplyResults(IRequestTaskResultAggregator aggregator)
     {
         aggregator.SetUsers(_task.Result);
+    }
+
+    public void OnSuccessMessaging(MessageManager manager)
+    {
+        
+    }
+
+    public void OnFailureMessaging(MessageManager manager)
+    {
+        
     }
 }

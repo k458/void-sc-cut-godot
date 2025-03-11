@@ -6,12 +6,13 @@ using System.Net.Http.Headers;
 using GodotPlugins.Game;
 using voidsccut.scripts.client.model;
 using voidsccut.scripts.client.model.requests;
+using voidsccut.scripts.messageService;
 using voidsccut.scripts.shared;
 using voidsccut.scripts.shared.serverTypes;
 
 namespace voidsccut.scripts.client;
 
-public class ClientService : IProcessable, IClientService
+public class ClientService : IProcessable, IClientService, IMessageReceiver
 {
     private DateTime _tokenExpiry;
     private bool _recreateToken = false;
@@ -23,6 +24,11 @@ public class ClientService : IProcessable, IClientService
     public IProcessable Processable => this;
     public IRequestTaskResultProvider ResultProvider => _taskResults;
     public bool IsFinished { get; private set; }
+
+    public void Init()
+    {
+        Game.MessageManager.AddMessageReceiver(this);
+    }
     
     public void Process(float deltaTime)
     {
@@ -38,19 +44,12 @@ public class ClientService : IProcessable, IClientService
         }
         if (_pendingRequests.Peek().IsFailed)
         {
-            _pendingRequests.Dequeue();
+            _pendingRequests.Dequeue().OnFailureMessaging(Game.MessageManager);
         }
         else if (_pendingRequests.Peek().IsCompleted)
         {
+            _pendingRequests.Peek().OnSuccessMessaging(Game.MessageManager);
             _pendingRequests.Dequeue().ApplyResults(_taskResults);
-            TokenTime tt = ResultProvider.ObtainTokenTime();
-            if (tt != null)
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tt.Token);
-                _tokenExpiry = DateTime.Now.AddMilliseconds(tt.Time/4*3);
-                _recreateToken = true;
-                Game.Main.Log("Token updated: "+tt.ToString());
-            }
         }
         else if (!_pendingRequests.Peek().IsStarted)
         {
@@ -92,6 +91,29 @@ public class ClientService : IProcessable, IClientService
                 _pendingRequests.Enqueue(new RequestTaskUsers());
                 break;
             }
+        }
+    }
+
+    public void Logout()
+    {
+        Game.Main.Log("Client: Logout");
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "i_am_TOKEN_to_you");
+        _recreateToken = false;
+    }
+
+    public void Message(MessageType type)
+    {
+        switch (type)
+        {
+            case MessageType.NewTokenAvailable:
+                TokenTime tt = ResultProvider.ObtainTokenTime();
+                if (tt != null)
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tt.Token);
+                    _tokenExpiry = DateTime.Now.AddMilliseconds(tt.Time/4*3);
+                    _recreateToken = true;
+                }
+                break;
         }
     }
 }

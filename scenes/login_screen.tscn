@@ -1,0 +1,117 @@
+[gd_scene load_steps=5 format=3 uid="uid://drfokpl46a8xs"]
+
+[ext_resource type="Script" uid="uid://ce03l0w8efndi" path="res://scripts/screens/loginScreen/LoginScreen.cs" id="1_kcwbp"]
+[ext_resource type="Script" uid="uid://bj4s3st0r2mxh" path="res://scripts/screens/ui/buttons/LoginButton.cs" id="2_mhqwn"]
+[ext_resource type="Script" uid="uid://gr4ycruvvae3" path="res://scripts/screens/ui/buttons/CreateAccountButton.cs" id="3_mhqwn"]
+[ext_resource type="Script" uid="uid://cqfduktk0aaea" path="res://scripts/screens/loginScreen/ErrorLabel.cs" id="4_mhqwn"]
+
+[node name="LoginScreen" type="Node2D" node_paths=PackedStringArray("UiRoot")]
+script = ExtResource("1_kcwbp")
+UiRoot = NodePath("CanvasLayer/UiRoot")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UiRoot" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/UiRoot"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.392157, 0.313726, 0.117647, 1)
+
+[node name="NameText" type="TextEdit" parent="CanvasLayer/UiRoot"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = -38.0
+offset_right = 85.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "admin"
+
+[node name="PasswordText" type="TextEdit" parent="CanvasLayer/UiRoot"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = 2.0
+offset_right = 85.0
+offset_bottom = 38.0
+text = "password"
+context_menu_enabled = false
+emoji_menu_enabled = false
+drag_and_drop_selection_enabled = false
+middle_mouse_paste_enabled = false
+empty_selection_clipboard_enabled = false
+
+[node name="LoginButton" type="Button" parent="CanvasLayer/UiRoot"]
+self_modulate = Color(0.980392, 0.862745, 0.745098, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = 52.0
+offset_right = 85.0
+offset_bottom = 88.0
+text = "Login"
+script = ExtResource("2_mhqwn")
+
+[node name="CreateAccountButton" type="Button" parent="CanvasLayer/UiRoot"]
+self_modulate = Color(0.980392, 0.862745, 0.745098, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = 92.0
+offset_right = 85.0
+offset_bottom = 128.0
+text = "Create Account"
+script = ExtResource("3_mhqwn")
+
+[node name="ErrorLabel" type="Label" parent="CanvasLayer/UiRoot"]
+self_modulate = Color(0.941176, 0.470588, 0.392157, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = -78.0
+offset_right = 85.0
+offset_bottom = -42.0
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+script = ExtResource("4_mhqwn")

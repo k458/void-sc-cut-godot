@@ -1,6 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://5ta5pkucq6da"]
+[gd_scene load_steps=5 format=3 uid="uid://5ta5pkucq6da"]
 
 [ext_resource type="Script" uid="uid://capcf3wkefgcc" path="res://scripts/main/Main.cs" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://dqjm081si1emj" path="res://scripts/screens/ScreenManager.cs" id="2_sugp2"]
+[ext_resource type="PackedScene" uid="uid://drfokpl46a8xs" path="res://scenes/login_screen.tscn" id="3_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://coblkuf371ser" path="res://scenes/placeholder_screen.tscn" id="4_jyhfs"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_o5qli")
+
+[node name="ScreenManager" type="Node2D" parent="."]
+script = ExtResource("2_sugp2")
+
+[node name="LoginScreen" parent="ScreenManager" instance=ExtResource("3_jyhfs")]
+
+[node name="PlaceholderScreen" parent="ScreenManager" instance=ExtResource("4_jyhfs")]

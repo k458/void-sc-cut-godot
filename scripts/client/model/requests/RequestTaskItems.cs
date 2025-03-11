@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using voidsccut.scripts.messageService;
 using voidsccut.scripts.shared.serverTypes.items;
 
 namespace voidsccut.scripts.client.model.requests;
@@ -41,5 +42,13 @@ public class RequestTaskItems:IRequestTask
     public void ApplyResults(IRequestTaskResultAggregator aggregator)
     {
         aggregator.SetItemsDto(_task.Result);
+    }
+    public void OnSuccessMessaging(MessageManager manager)
+    {
+        
+    }
+    public void OnFailureMessaging(MessageManager manager)
+    {
+        
     }
 }

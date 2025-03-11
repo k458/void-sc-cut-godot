@@ -1,12 +1,14 @@
 using voidsccut.scripts.client;
 using voidsccut.scripts.grid;
 using voidsccut.scripts.main;
+using voidsccut.scripts.messageService;
 using voidsccut.scripts.shared;
 
 namespace voidsccut.scripts;
 
 public static class Game
 {
+    public static MessageManager MessageManager = new MessageManager();
     public static IMain Main { get; private set; }
     public static IClientService ClientService { get; } = new ClientService();
     public static IPlayer Player { get; } = new Player();

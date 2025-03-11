@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using voidsccut.scripts.messageService;
 
 namespace voidsccut.scripts.client.model.requests;
 
@@ -40,5 +41,13 @@ public class RequestTaskRecreateToken : IRequestTask
     public void ApplyResults(IRequestTaskResultAggregator aggregator)
     {
         aggregator.SetTokenTime(_task.Result);
+    }
+    public void OnSuccessMessaging(MessageManager manager)
+    {
+        manager.TransmitMessage(MessageType.NewTokenAvailable);
+    }
+    public void OnFailureMessaging(MessageManager manager)
+    {
+        
     }
 }

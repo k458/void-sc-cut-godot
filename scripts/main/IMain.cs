@@ -2,6 +2,8 @@ namespace  voidsccut.scripts.main;
 
 public interface IMain
 {
-    //public IMainManipulator Manipulator { get; }
-    public void Log(string s);
+    void Log(string s);
+    void Login(string name, string password);
+    void CreateAccount(string name, string password);
+    void Logout();
 }

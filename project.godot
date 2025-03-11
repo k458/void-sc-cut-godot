@@ -12,8 +12,14 @@ config_version=5
 
 config/name="void-sc-cut"
 run/main_scene="uid://5ta5pkucq6da"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/borderless=true
 
 [dotnet]
 
