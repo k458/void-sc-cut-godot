@@ -8,55 +8,20 @@ using voidsccut.scripts.shared.serverTypes;
 
 namespace voidsccut.scripts.client.model.requests;
 
-public class RequestTaskUsers :IRequestTask
+public class RequestTaskUsers : RequestTask
 {
-    public bool IsStarted { get; private set; } = false;
-    public bool IsCompleted => _task != null && _task.IsCompleted;
-    public bool IsFailed { get; private set; } = false;
-    private Task<List<UserEntity>> _task;
-    public void SendRequest(HttpClient client)
+    protected override void OnStart()
     {
-        IsStarted = true;
-        _task = GetDataAsync(client, Config.ServerUrl+"/users");
+        throw new NotImplementedException();
     }
 
-    private async Task<List<UserEntity>> GetDataAsync(HttpClient httpClient, string url)
+    protected override void OnFailure()
     {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-        try
-        {
-            response.EnsureSuccessStatusCode();
-        }
-        catch(Exception e)
-        {
-            IsFailed = true;
-            return null;
-        }
-        try
-        {
-            //Game.Main.Log(await response.Content.ReadAsStringAsync());
-            return await response.Content.ReadFromJsonAsync<List<UserEntity>>(Config.JsonOptions);
-        }
-        catch (Exception e)
-        {
-            IsFailed = true;
-            return null;
-        }
-    }
-    
-    
-    public void ApplyResults(IRequestTaskResultAggregator aggregator)
-    {
-        aggregator.SetUsers(_task.Result);
+        throw new NotImplementedException();
     }
 
-    public void OnSuccessMessaging(MessageManager manager)
+    protected override void OnFinish()
     {
-        
-    }
-
-    public void OnFailureMessaging(MessageManager manager)
-    {
-        
+        throw new NotImplementedException();
     }
 }

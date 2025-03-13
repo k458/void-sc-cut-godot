@@ -7,48 +7,20 @@ using voidsccut.scripts.shared.serverTypes.progression;
 
 namespace voidsccut.scripts.client.model.requests;
 
-public class RequestTaskProgression :IRequestTask
+public class RequestTaskProgression : RequestTask
 {
-    public bool IsStarted { get; private set; } = false;
-    public bool IsCompleted => _task != null && _task.IsCompleted;
-    public bool IsFailed { get; private set; } = false;
-    private Task<ProgressionDto> _task;
-    public void SendRequest(HttpClient client)
+    protected override void OnStart()
     {
-        IsStarted = true;
-        _task = GetDataAsync(client, Config.ServerUrl+"/progression");
+        throw new NotImplementedException();
     }
 
-    private async Task<ProgressionDto> GetDataAsync(HttpClient httpClient, string url)
+    protected override void OnFailure()
     {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-        {
-            IsFailed = true;
-            return null;
-        }
-        try
-        {
-            return await response.Content.ReadFromJsonAsync<ProgressionDto>(Config.JsonOptions);
-        }
-        catch (Exception e)
-        {
-            IsFailed = true;
-            return null;
-        }
+        throw new NotImplementedException();
     }
-    
-    
-    public void ApplyResults(IRequestTaskResultAggregator aggregator)
+
+    protected override void OnFinish()
     {
-        aggregator.SetProgressionDto(_task.Result);
-    }
-    public void OnSuccessMessaging(MessageManager manager)
-    {
-        
-    }
-    public void OnFailureMessaging(MessageManager manager)
-    {
-        
+        throw new NotImplementedException();
     }
 }

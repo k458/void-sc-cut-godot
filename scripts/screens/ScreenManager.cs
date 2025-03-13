@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 using voidsccut.scripts.screens.loginScreen;
+using voidsccut.scripts.screens.overlayScreen;
 using voidsccut.scripts.screens.placeholderScreen;
 
 namespace voidsccut.scripts.screens;
@@ -8,6 +9,7 @@ namespace voidsccut.scripts.screens;
 public partial class ScreenManager : Node2D
 {
     public Screen CurrentScreen { get; private set; }
+    public OverlayScreen OverlayScreen { get; private set; }
     
     private Screen _loginScreen;
     private Screen _placeholderScreen;
@@ -16,10 +18,14 @@ public partial class ScreenManager : Node2D
 
     public override void _Ready()
     {
+        OverlayScreen = GetNode<OverlayScreen>("OverlayScreen");
+        
         _loginScreen = GetNode<LoginScreen>("LoginScreen");
         _screens.Add(_loginScreen);
+        
         _placeholderScreen = GetNode<PlaceholderScreen>("PlaceholderScreen");
         _screens.Add(_placeholderScreen);
+        
         HideAllScreens();
     }
 

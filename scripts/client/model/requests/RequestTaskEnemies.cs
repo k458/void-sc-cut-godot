@@ -7,48 +7,20 @@ using voidsccut.scripts.shared.serverTypes.enemies;
 
 namespace voidsccut.scripts.client.model.requests;
 
-public class RequestTaskEnemies:IRequestTask
+public class RequestTaskEnemies : RequestTask
 {
-    public bool IsStarted { get; private set; } = false;
-    public bool IsCompleted => _task != null && _task.IsCompleted;
-    public bool IsFailed { get; private set; } = false;
-    private Task<EnemiesDto> _task;
-    public void SendRequest(HttpClient client)
+    protected override void OnStart()
     {
-        IsStarted = true;
-        _task = GetDataAsync(client, Config.ServerUrl+"/enemies");
+        throw new NotImplementedException();
     }
 
-    private async Task<EnemiesDto> GetDataAsync(HttpClient httpClient, string url)
+    protected override void OnFailure()
     {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-        {
-            IsFailed = true;
-            return null;
-        }
-        try
-        {
-            return await response.Content.ReadFromJsonAsync<EnemiesDto>(Config.JsonOptions);
-        }
-        catch (Exception e)
-        {
-            IsFailed = true;
-            return null;
-        }
+        throw new NotImplementedException();
     }
-    
-    
-    public void ApplyResults(IRequestTaskResultAggregator aggregator)
+
+    protected override void OnFinish()
     {
-        aggregator.SetEnemiesDto(_task.Result);
-    }
-    public void OnSuccessMessaging(MessageManager manager)
-    {
-        
-    }
-    public void OnFailureMessaging(MessageManager manager)
-    {
-        
+        throw new NotImplementedException();
     }
 }

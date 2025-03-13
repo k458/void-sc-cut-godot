@@ -1,3 +1,4 @@
+using System.Net;
 using Godot;
 using voidsccut.scripts.client.model;
 using voidsccut.scripts.messageService;
@@ -89,28 +90,40 @@ public partial class Main : Node2D, IMain, IMessageReceiver
 				break;
 		}
 	}
-	public void Log(string s) => GD.Print(s);
+
+	public void Log(string s) //=> GD.Print(s);
+	{
+		_screenManager.OverlayScreen.Log(s, 5f);
+	}
 	public void SetIsPlayerControlAllowed(bool allowed) => IsPlayerControlAllowed = allowed;
 
 	public void Login(string name, string password)
 	{
-		if(_isAuthorizationBusy)return;
+		if(_isAuthorizationBusy)
+		{
+			Log("Authorization is in process...");
+			return;
+		}
+		Log("Login...");
 		_isAuthorizationBusy = true;
 		UserNamePassword userNamePassword = new UserNamePassword();
 		userNamePassword.Name = name;
 		userNamePassword.Password = password;
-		//Game.MessageManager.AddMessageReceiver(this, MessageType.ServerAuthorized);
 		Game.ClientService.AddRequest(RequestType.Login, userNamePassword);
 	}
 
 	public void CreateAccount(string name, string password)
 	{
-		if(_isAuthorizationBusy)return;
+		if(_isAuthorizationBusy)
+		{
+			Log("Authorization is in process...");
+			return;
+		}
+		Log("Creating a new account...");
 		_isAuthorizationBusy = true;
 		UserNamePassword userNamePassword = new UserNamePassword();
 		userNamePassword.Name = name;
 		userNamePassword.Password = password;
-		//Game.MessageManager.AddMessageReceiver(this, MessageType.ServerAuthorized);
 		Game.ClientService.AddRequest(RequestType.CreateUser, userNamePassword);
 	}
 
@@ -119,18 +132,21 @@ public partial class Main : Node2D, IMain, IMessageReceiver
 		switch (type)
 		{
 			case MessageType.ClientAuthorized:
+				Log("Authorized.");
 				Game.SetState(GameState.PlaceHolder);
-				_isAuthorizationBusy = false;
+				if (_isAuthorizationBusy) _isAuthorizationBusy = false;
 				break;
 			case MessageType.ClientAuthorizationFailed:
+				Log(Game.MessageManager.Log);
 				Game.SetState(GameState.Login);
-				_isAuthorizationBusy = false;
+				if (_isAuthorizationBusy) _isAuthorizationBusy = false;
 				break;
 		}
 	}
 
 	public void Logout()
 	{
+		Log("Goodbye.");
 		Game.SetState(GameState.Login);
 		Game.ClientService.Logout();
 	}

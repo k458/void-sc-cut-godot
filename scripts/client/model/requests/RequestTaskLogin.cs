@@ -2,54 +2,66 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Godot;
 using voidsccut.scripts.messageService;
 using voidsccut.scripts.shared.serverTypes;
 
 namespace voidsccut.scripts.client.model.requests;
 
-public class RequestTaskLogin(UserNamePassword userNamePassword) : IRequestTask
+public class RequestTaskLogin(UserNamePassword userNamePassword) : RequestTask
 {
-    public bool IsStarted { get; private set; } = false;
-    public bool IsCompleted => _task != null && _task.IsCompleted;
-    public bool IsFailed { get; private set; } = false;
-    private Task<TokenTime> _task;
-
-    public void SendRequest(HttpClient client)
+    private TokenTime _tokenTime;
+    private string _log;
+    
+    protected override void OnStart()
     {
-        IsStarted = true;
-        _task = PostDataAsync(client, Config.ServerUrl+"/login");
+        Task task = Do("/login");
     }
-
-    private async Task<TokenTime> PostDataAsync(HttpClient httpClient, string url)
+    protected async Task Do(string url)
     {
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync(url, userNamePassword);
-        if (!response.IsSuccessStatusCode)
-        {
-            IsFailed = true;
-            return null;
-        }
+        HttpResponseMessage response;
+        //response = await Client.PostAsJsonAsync(url, userNamePassword);
         try
         {
-            return await response.Content.ReadFromJsonAsync<TokenTime>(Config.JsonOptions);
+            GD.Print("Response from "+Client.BaseAddress+url);
+            response = await Client.PostAsJsonAsync(url, userNamePassword);
         }
         catch (Exception e)
         {
+            _log = "Authorization failed: cannot connect to server.";
             IsFailed = true;
-            return null;
+            return;
         }
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            _log = "Authorization failed: forbidden or bad request.";
+            IsFailed = true;
+            return;
+        }
+        
+        try
+        {
+            _tokenTime = await response.Content.ReadFromJsonAsync<TokenTime>(Config.JsonOptions);
+        }
+        catch (Exception e)
+        {
+            _log = "Authorization failed: cannot parse token.";
+            IsFailed = true;
+            return;
+        }
+        IsFinished = true;
     }
     
-    public void ApplyResults(IRequestTaskResultAggregator aggregator)
+    protected override void OnFailure()
     {
-        aggregator.SetTokenTime(_task.Result);
+        MessageTransmitter.TransmitMessage(MessageType.ClientAuthorizationFailed, _log);
     }
-    public void OnSuccessMessaging(MessageManager manager)
+
+    protected override void OnFinish()
     {
-        manager.TransmitMessage(MessageType.NewTokenAvailable);
-        manager.TransmitMessage(MessageType.ClientAuthorized);
-    }
-    public void OnFailureMessaging(MessageManager manager)
-    {
-        manager.TransmitMessage(MessageType.ClientAuthorizationFailed);
+        Aggregator.SetTokenTime(_tokenTime);
+        MessageTransmitter.TransmitMessage(MessageType.NewTokenAvailable);
+        MessageTransmitter.TransmitMessage(MessageType.ClientAuthorized);
     }
 }

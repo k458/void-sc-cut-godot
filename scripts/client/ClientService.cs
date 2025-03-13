@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
+using Godot;
 using GodotPlugins.Game;
 using voidsccut.scripts.client.model;
 using voidsccut.scripts.client.model.requests;
 using voidsccut.scripts.messageService;
 using voidsccut.scripts.shared;
 using voidsccut.scripts.shared.serverTypes;
+using HttpClient = System.Net.Http.HttpClient;
 
 namespace voidsccut.scripts.client;
 
@@ -16,9 +17,9 @@ public class ClientService : IProcessable, IClientService, IMessageReceiver
 {
     private DateTime _tokenExpiry;
     private bool _recreateToken = false;
-    
+
     private readonly HttpClient _httpClient = new HttpClient();
-    private readonly Queue<IRequestTask> _pendingRequests = new Queue<IRequestTask>();
+    private readonly Queue<RequestTask> _pendingRequests = new Queue<RequestTask>();
     private readonly RequestTaskResults _taskResults = new RequestTaskResults();
     
     public IProcessable Processable => this;
@@ -28,13 +29,18 @@ public class ClientService : IProcessable, IClientService, IMessageReceiver
     public void Init()
     {
         Game.MessageManager.AddMessageReceiver(this);
+        _httpClient.Timeout = TimeSpan.FromSeconds(10);
+        _httpClient.BaseAddress = new Uri("http://localhost:8090");
     }
     
     public void Process(float deltaTime)
     {
+        IsFinished = true;
         if (_recreateToken && DateTime.Now > _tokenExpiry)
         {
-            _pendingRequests.Enqueue(new RequestTaskRecreateToken());
+            var task = new RequestTaskRecreateToken();
+            task.Init(_httpClient, _taskResults, Game.MessageManager);
+            _pendingRequests.Enqueue(task);
             _recreateToken = false;
         }
         if (_pendingRequests.Count == 0)
@@ -42,34 +48,31 @@ public class ClientService : IProcessable, IClientService, IMessageReceiver
             IsFinished = true;
             return;
         }
-        if (_pendingRequests.Peek().IsFailed)
+        else
         {
-            _pendingRequests.Dequeue().OnFailureMessaging(Game.MessageManager);
+            var requestTask = _pendingRequests.Peek();
+            requestTask.Process(deltaTime);
+            IsFinished = requestTask.IsFinished;
+            if (requestTask.IsFinished) _pendingRequests.Dequeue();
         }
-        else if (_pendingRequests.Peek().IsCompleted)
-        {
-            _pendingRequests.Peek().OnSuccessMessaging(Game.MessageManager);
-            _pendingRequests.Dequeue().ApplyResults(_taskResults);
-        }
-        else if (!_pendingRequests.Peek().IsStarted)
-        {
-            _pendingRequests.Peek().SendRequest(_httpClient);
-        }
-        IsFinished = false;
     }
 
     public void AddRequest(RequestType type, UserNamePassword userNamePassword)
     {
         switch (type)
         {
-            case RequestType.CreateUser:
-            {
-                _pendingRequests.Enqueue(new RequestTaskCreateUser(userNamePassword));
-                break;
-            }
             case RequestType.Login:
             {
-                _pendingRequests.Enqueue(new RequestTaskLogin(userNamePassword));
+                var requestTask = new RequestTaskLogin(userNamePassword);
+                requestTask.Init(_httpClient, _taskResults, Game.MessageManager);
+                _pendingRequests.Enqueue(requestTask);
+                break;
+            }
+            case RequestType.CreateUser:
+            { 
+                var requestTask = new RequestTaskCreateUser(userNamePassword);
+                requestTask.Init(_httpClient, _taskResults, Game.MessageManager);
+                _pendingRequests.Enqueue(requestTask);
                 break;
             }
         }
@@ -78,25 +81,23 @@ public class ClientService : IProcessable, IClientService, IMessageReceiver
     {
         switch (type)
         {
-            case RequestType.CreateUser:
-            {
-                break;    
-            }
-            case RequestType.RecreateToken:
-            {
+            // case RequestType.RecreateToken:
+            // {
+            //     break;
+            // }
+            // case RequestType.GetUsers:
+            // {
+            //     _pendingRequests.Enqueue(new RequestTaskUsers());
+            //     break;
+            // }
+            default:
                 break;
-            }
-            case RequestType.GetUsers:
-            {
-                _pendingRequests.Enqueue(new RequestTaskUsers());
-                break;
-            }
         }
     }
 
     public void Logout()
     {
-        Game.Main.Log("Client: Logout");
+        Game.Main.Log("Logout...");
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "i_am_TOKEN_to_you");
         _recreateToken = false;
     }

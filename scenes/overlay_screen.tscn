@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8tvwhw13ssd2"]
+
+[ext_resource type="Script" uid="uid://dbmwklt0eya2e" path="res://scripts/screens/overlayScreen/OverlayScreen.cs" id="1_g16q8"]
+[ext_resource type="Script" uid="uid://bwgxndqdexpfk" path="res://scripts/screens/ui/labels/TimedTextLabel.cs" id="2_g16q8"]
+
+[node name="OverlayScreen" type="Node2D" node_paths=PackedStringArray("UiRoot")]
+script = ExtResource("1_g16q8")
+UiRoot = NodePath("CanvasLayer/UiRoot")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UiRoot" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LogLabel" type="Label" parent="CanvasLayer/UiRoot"]
+self_modulate = Color(0.941176, 0.470588, 0.392157, 1)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -640.0
+offset_top = 320.0
+offset_right = -470.0
+offset_bottom = 356.0
+grow_vertical = 0
+vertical_alignment = 1
+autowrap_mode = 2
+script = ExtResource("2_g16q8")

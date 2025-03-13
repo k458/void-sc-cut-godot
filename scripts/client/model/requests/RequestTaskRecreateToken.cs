@@ -6,48 +6,54 @@ using voidsccut.scripts.messageService;
 
 namespace voidsccut.scripts.client.model.requests;
 
-public class RequestTaskRecreateToken : IRequestTask
+public class RequestTaskRecreateToken : RequestTask
 {
-    public bool IsStarted { get; private set; } = false;
-    public bool IsCompleted => _task != null && _task.IsCompleted;
-    public bool IsFailed { get; private set; } = false;
-    private Task<TokenTime> _task;
-
-    public void SendRequest(HttpClient client)
+    private TokenTime _tokenTime;
+    
+    protected override void OnStart()
     {
-        IsStarted = true;
-        _task = GetDataAsync(client, Config.ServerUrl+"/recreateToken");
+        Task task = Do("/recreateToken");
     }
-
-    private async Task<TokenTime> GetDataAsync(HttpClient httpClient, string url)
+    private async Task Do(string url)
     {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-        {
-            IsFailed = true;
-            return null;
-        }
+        HttpResponseMessage response;
+        
         try
         {
-            return await response.Content.ReadFromJsonAsync<TokenTime>(Config.JsonOptions);
+            response = await Client.GetAsync(url);
         }
         catch (Exception e)
         {
             IsFailed = true;
-            return null;
+            return;
         }
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            IsFailed = true;
+            return;
+        }
+        
+        try
+        {
+            _tokenTime = await response.Content.ReadFromJsonAsync<TokenTime>(Config.JsonOptions);
+        }
+        catch (Exception e)
+        {
+            IsFailed = true;
+            return;
+        }
+        IsFinished = true;
     }
     
-    public void ApplyResults(IRequestTaskResultAggregator aggregator)
+    protected override void OnFailure()
     {
-        aggregator.SetTokenTime(_task.Result);
+        MessageTransmitter.TransmitMessage(MessageType.ClientAuthorizationFailed);
     }
-    public void OnSuccessMessaging(MessageManager manager)
+
+    protected override void OnFinish()
     {
-        manager.TransmitMessage(MessageType.NewTokenAvailable);
-    }
-    public void OnFailureMessaging(MessageManager manager)
-    {
-        
+        Aggregator.SetTokenTime(_tokenTime);
+        MessageTransmitter.TransmitMessage(MessageType.NewTokenAvailable);
     }
 }

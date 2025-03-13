@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://ce03l0w8efndi" path="res://scripts/screens/loginScreen/LoginScreen.cs" id="1_kcwbp"]
 [ext_resource type="Script" uid="uid://bj4s3st0r2mxh" path="res://scripts/screens/ui/buttons/LoginButton.cs" id="2_mhqwn"]
 [ext_resource type="Script" uid="uid://gr4ycruvvae3" path="res://scripts/screens/ui/buttons/CreateAccountButton.cs" id="3_mhqwn"]
-[ext_resource type="Script" uid="uid://cqfduktk0aaea" path="res://scripts/screens/loginScreen/ErrorLabel.cs" id="4_mhqwn"]
+[ext_resource type="Script" uid="uid://bwgxndqdexpfk" path="res://scripts/screens/ui/labels/TimedTextLabel.cs" id="4_mhqwn"]
 
 [node name="LoginScreen" type="Node2D" node_paths=PackedStringArray("UiRoot")]
 script = ExtResource("1_kcwbp")

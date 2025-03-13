@@ -1,9 +1,9 @@
 using System;
 using Godot;
 
-namespace voidsccut.scripts.screens.loginScreen;
+namespace voidsccut.scripts.screens.ui.labels;
 
-public partial class ErrorLabel : Label
+public partial class TimedTextLabel : Label
 {
     private float _timeLeft;
     public override void _Process(double delta)

@@ -7,48 +7,20 @@ using voidsccut.scripts.shared.serverTypes.characters;
 
 namespace voidsccut.scripts.client.model.requests;
 
-public class RequestTaskCharacters:IRequestTask
+public class RequestTaskCharacters: RequestTask
 {
-    public bool IsStarted { get; private set; } = false;
-    public bool IsCompleted => _task != null && _task.IsCompleted;
-    public bool IsFailed { get; private set; } = false;
-    private Task<CharactersDto> _task;
-    public void SendRequest(HttpClient client)
+    protected override void OnStart()
     {
-        IsStarted = true;
-        _task = GetDataAsync(client, Config.ServerUrl+"/characters");
+        throw new NotImplementedException();
     }
 
-    private async Task<CharactersDto> GetDataAsync(HttpClient httpClient, string url)
+    protected override void OnFailure()
     {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-        {
-            IsFailed = true;
-            return null;
-        }
-        try
-        {
-            return await response.Content.ReadFromJsonAsync<CharactersDto>(Config.JsonOptions);
-        }
-        catch (Exception e)
-        {
-            IsFailed = true;
-            return null;
-        }
+        throw new NotImplementedException();
     }
-    
-    
-    public void ApplyResults(IRequestTaskResultAggregator aggregator)
+
+    protected override void OnFinish()
     {
-        aggregator.SetCharactersDto(_task.Result);
-    }
-    public void OnSuccessMessaging(MessageManager manager)
-    {
-        
-    }
-    public void OnFailureMessaging(MessageManager manager)
-    {
-        
+        throw new NotImplementedException();
     }
 }

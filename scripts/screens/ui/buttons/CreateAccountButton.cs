@@ -1,7 +1,4 @@
-using Godot;
-using voidsccut.scripts.screens.ui;
-
-namespace voidsccut.scripts.screens.loginScreen.ui;
+namespace voidsccut.scripts.screens.ui.buttons;
 
 public partial class CreateAccountButton : ScreenButton
 {

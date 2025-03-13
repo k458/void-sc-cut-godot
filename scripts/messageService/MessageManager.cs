@@ -4,8 +4,9 @@ using voidsccut.scripts.shared.serverTypes;
 
 namespace voidsccut.scripts.messageService;
 
-public class MessageManager
+public class MessageManager : IMessageManager
 {
+    public string Log { get; private set; }
     private List<IMessageReceiver> _receivers = new List<IMessageReceiver>();
     
     public void AddMessageReceiver(IMessageReceiver receiver)
@@ -18,6 +19,12 @@ public class MessageManager
         {
             if (receiver != null) receiver.Message(type);
         }
+    }
+
+    public void TransmitMessage(MessageType type, string log)
+    {
+        Log = log;
+        TransmitMessage(type);
     }
 }
 
